@@ -19,4 +19,17 @@
 
 
 // TODO: 프로그램에 필요한 추가 헤더는 여기에서 참조합니다.
+#include <d3d11.h>
+#include <d3dcommon.h>
+#include <dxgi.h>
+#include <d3dx10math.h>
+#include <dxerr.h>
+#include <d3dx11async.h>
+#include <dinput.h>
+#include <fstream>
+#include <string>
+
+
+using namespace std;
+
 #include "Value.h"

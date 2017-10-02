@@ -15,7 +15,7 @@ HWND g_hWnd = NULL;
 
 // 이 코드 모듈에 들어 있는 함수의 정방향 선언입니다.
 ATOM                MyRegisterClass(HINSTANCE hInstance);
-BOOL                InitInstance(HINSTANCE, int,HWND _hWnd);
+BOOL                InitInstance(HINSTANCE, int,HWND* _hWnd);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
@@ -36,7 +36,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MyRegisterClass(hInstance);
 
     // 응용 프로그램 초기화를 수행합니다.
-    if (!InitInstance (hInstance, nCmdShow, g_hWnd))
+    if (!InitInstance (hInstance, nCmdShow, &g_hWnd))
     {
         return FALSE;
     }
@@ -46,6 +46,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MSG msg;
 
 	MainApp *cMainApp = new MainApp();
+	cMainApp->Init(ScreenX, ScreenY, g_hWnd);
 
 	bool bDone = false;
     // 기본 메시지 루프입니다.
@@ -109,11 +110,11 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //        이 함수를 통해 인스턴스 핸들을 전역 변수에 저장하고
 //        주 프로그램 창을 만든 다음 표시합니다.
 //
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow, HWND _hWnd)
+BOOL InitInstance(HINSTANCE hInstance, int nCmdShow, HWND* _hWnd)
 {
    hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
-   _hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+   *_hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, ScreenX, ScreenY, nullptr, nullptr, hInstance, nullptr);
 
    if (!_hWnd)
@@ -121,8 +122,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow, HWND _hWnd)
       return FALSE;
    }
 
-   ShowWindow(_hWnd, nCmdShow);
-   UpdateWindow(_hWnd);
+   ShowWindow(*_hWnd, nCmdShow);
+   UpdateWindow(*_hWnd);
 
    return TRUE;
 }
@@ -167,6 +168,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_DESTROY:
+		MainApp::Instance->Shutdown();
         PostQuitMessage(0);
         break;
     default:
