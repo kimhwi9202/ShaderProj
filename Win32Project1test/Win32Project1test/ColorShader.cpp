@@ -24,7 +24,7 @@ bool ColorShader::Initialize(ID3D11Device* device, HWND hwnd)
 
 
 	// Initialize the vertex and pixel shaders.
-	result = InitializeShader(device, hwnd, L"Shaders/Colorvs.fx", L"Shaders/Colorps.fx");
+	result = InitializeShader(device, hwnd, L"Shaders/Texturevs.fx", L"Shaders/Textureps.fx");
 	if (!result)
 	{
 		return false;
@@ -42,13 +42,13 @@ void ColorShader::Shutdown()
 }
 
 bool ColorShader::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix,
-	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix)
+	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix , ID3D11ShaderResourceView* pTexture)
 {
 	bool result;
 
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix , pTexture);
 	if (!result)
 	{
 		return false;
@@ -77,7 +77,7 @@ bool ColorShader::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 	pixelShaderBuffer = 0;
 
 	// Compile the vertex shader code.
-	result = D3DX11CompileFromFile(vsFilename, NULL, NULL, "ColorVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
+	result = D3DX11CompileFromFile(vsFilename, NULL, NULL, "TextureVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
 		&vertexShaderBuffer, &errorMessage, NULL);
 	if (FAILED(result))
 	{
@@ -96,7 +96,7 @@ bool ColorShader::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 	}
 
 	// Compile the pixel shader code.
-	result = D3DX11CompileFromFile(psFilename, NULL, NULL, "ColorPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
+	result = D3DX11CompileFromFile(psFilename, NULL, NULL, "TexturePixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
 		&pixelShaderBuffer, &errorMessage, NULL);
 	if (FAILED(result))
 	{
@@ -138,9 +138,9 @@ bool ColorShader::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[0].InstanceDataStepRate = 0;
 
-	polygonLayout[1].SemanticName = "COLOR";
+	polygonLayout[1].SemanticName = "TEXCOORD";
 	polygonLayout[1].SemanticIndex = 0;
-	polygonLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	polygonLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
 	polygonLayout[1].InputSlot = 0;
 	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
@@ -174,6 +174,29 @@ bool ColorShader::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 
 	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
 	result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	D3D11_SAMPLER_DESC samplerDesc;
+	// Create a texture sampler state description.
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[1] = 0;
+	samplerDesc.BorderColor[2] = 0;
+	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	// Create the texture sampler state.
+	result = device->CreateSamplerState(&samplerDesc, &m_sampleState);
 	if (FAILED(result))
 	{
 		return false;
@@ -253,7 +276,7 @@ void ColorShader::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, 
 }
 
 bool ColorShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix,
-	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix)
+	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix , ID3D11ShaderResourceView* texture)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -288,6 +311,9 @@ bool ColorShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMA
 
 	// Finanly set the constant buffer in the vertex shader with the updated values.
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
+
+	// Set shader texture resource in the pixel shader.
+	deviceContext->PSSetShaderResources(0, 1, &texture);
 
 	return true;
 

@@ -96,6 +96,12 @@
       <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>dxgi.lib;d3d11.lib;d3dx11.lib;d3dx10.lib;dxerr.lib;legacy_stdio_definitions.lib;dinput8.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <FxCompile />
+    <FxCompile>
+      <EntryPointName>main</EntryPointName>
+      <ShaderModel>5.0</ShaderModel>
+      <ShaderType>Effect</ShaderType>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -143,11 +149,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColorShader.h" />
+    <ClInclude Include="Cube.h" />
     <ClInclude Include="D3D11Device.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="MainApp.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SimpleCamera.h" />
+    <ClInclude Include="SimpleDMesh.h" />
     <ClInclude Include="SimpleModel.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -156,10 +164,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ColorShader.cpp" />
+    <ClCompile Include="Cube.cpp" />
     <ClCompile Include="D3D11Device.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="MainApp.cpp" />
     <ClCompile Include="SimpleCamera.cpp" />
+    <ClCompile Include="SimpleDMesh.cpp" />
     <ClCompile Include="SimpleModel.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -177,8 +187,10 @@
     <Image Include="Win32Project1test.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\Colorps.fx" />
-    <None Include="Shaders\Colorvs.fx" />
+    <FxCompile Include="Shaders\Colorps.fx" />
+    <FxCompile Include="Shaders\Colorvs.fx" />
+    <FxCompile Include="Shaders\Textureps.fx" />
+    <FxCompile Include="Shaders\Texturevs.fx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

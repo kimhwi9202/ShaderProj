@@ -8,7 +8,7 @@
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
-HINSTANCE hInst;                                // 현재 인스턴스입니다.
+HINSTANCE g_HInstance;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 HWND g_hWnd = NULL;
@@ -61,12 +61,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		else {
 			/* do rendering here */
-			cMainApp->Update();
+			if (!cMainApp->Update())
+				break;
 			cMainApp->Render();
 		}
 	}
 
-	DestroyWindow(g_hWnd);
+	
+	
 	UnregisterClass(szWindowClass, hInstance);
 
     return (int) msg.wParam;
@@ -112,7 +114,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow, HWND* _hWnd)
 {
-   hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
+   g_HInstance = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
    *_hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, ScreenX, ScreenY, nullptr, nullptr, hInstance, nullptr);
@@ -149,7 +151,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             switch (wmId)
             {
             case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+                DialogBox(g_HInstance, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
             case IDM_EXIT:
                 DestroyWindow(hWnd);
@@ -169,6 +171,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_DESTROY:
 		MainApp::Instance->Shutdown();
+		//DestroyWindow(g_hWnd);
         PostQuitMessage(0);
         break;
     default:

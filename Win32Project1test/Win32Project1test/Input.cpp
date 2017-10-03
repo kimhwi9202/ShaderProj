@@ -2,9 +2,12 @@
 #include "Input.h"
 
 
+Input* Input::Instance = 0;
+
 Input::Input()
 {
-
+	if (Instance == 0)
+		Instance = this;
 }
 
 
@@ -14,6 +17,9 @@ Input::~Input()
 
 bool Input::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight)
 {
+	
+
+
 	HRESULT result;
 
 
@@ -155,11 +161,34 @@ bool Input::IsEscapePressed()
 	return false;
 }
 
+
+bool Input::CheckKeyPressed(int Key_Code)
+{
+	if (m_keyboardState[Key_Code] & 0x80)
+	{
+		return true;
+	}
+	
+	return false;
+}
+
 void Input::GetMouseLocation(int& mouseX, int& mouseY)
 {
 	mouseX = m_mouseX;
 	mouseY = m_mouseY;
 	return;
+}
+
+Input* Input::GetInstance()
+{
+	if (Instance != 0)
+		return Instance;
+	else
+	{
+		MessageBox(g_hWnd, L"Input Instance is null", L"Input Instance is null", MB_OK);
+		return NULL;
+	}
+
 }
 
 bool Input::ReadKeyboard()
@@ -211,12 +240,12 @@ bool Input::ReadMouse()
 void Input::ProcessInput()
 {
 	// Update the location of the mouse cursor based on the change of the mouse location during the frame.
-	m_mouseX += m_mouseState.lX;
-	m_mouseY += m_mouseState.lY;
+	m_mouseX = m_mouseState.lX;
+	m_mouseY = m_mouseState.lY;
 
 	// Ensure the mouse location doesn't exceed the screen width or height.
-	if (m_mouseX < 0) { m_mouseX = 0; }
-	if (m_mouseY < 0) { m_mouseY = 0; }
+	//if (m_mouseX < 0) { m_mouseX = 0; }
+	//if (m_mouseY < 0) { m_mouseY = 0; }
 
 	if (m_mouseX > m_screenWidth) { m_mouseX = m_screenWidth; }
 	if (m_mouseY > m_screenHeight) { m_mouseY = m_screenHeight; }

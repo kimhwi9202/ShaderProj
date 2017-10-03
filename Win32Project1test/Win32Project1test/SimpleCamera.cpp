@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SimpleCamera.h"
+#include "Input.h"
 
 
 SimpleCamera::SimpleCamera()
@@ -49,6 +50,31 @@ D3DXVECTOR3 SimpleCamera::GetRotation()
 
 void SimpleCamera::Update()
 {
+	int x, y;
+	Input::GetInstance()->GetMouseLocation(x, y);
+	
+	m_rotationX += (float)y * 0.1f;
+	m_rotationY += (float)x * 0.1f;
+
+	if (Input::GetInstance()->CheckKeyPressed(DIK_W))
+	{
+		m_positionZ += 0.1f;
+	}
+
+	if (Input::GetInstance()->CheckKeyPressed(DIK_S))
+	{
+		m_positionZ -= 0.1f;
+	}
+
+	if (Input::GetInstance()->CheckKeyPressed(DIK_A))
+	{
+		m_positionX -= 0.1f;
+	}
+
+	if (Input::GetInstance()->CheckKeyPressed(DIK_D))
+	{
+		m_positionX += 0.1f;
+	}
 	/*
 	if (GetAsyncKeyState('W'))
 	{

@@ -4,6 +4,7 @@
 #include "SimpleCamera.h"
 #include "SimpleModel.h"
 #include "ColorShader.h"
+#include "Input.h"
 
 
 
@@ -44,7 +45,7 @@ bool MainApp::Render()
 	bool result;
 	// Clear the buffers to begin the scene.
 	m_D3D11->BeginScene(0.0f, 0.f, 1.0f, 1.0f);
-
+	
 
 	// Generate the view matrix based on the camera's position.
 	m_Camera->Render();
@@ -58,7 +59,7 @@ bool MainApp::Render()
 	m_Model->Render(m_D3D11->GetDeviceContext());
 
 	// Render the model using the color shader.
-	result = m_ColorShader->Render(m_D3D11->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+	result = m_ColorShader->Render(m_D3D11->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture());
 	if (!result)
 	{
 		return false;
@@ -72,9 +73,14 @@ bool MainApp::Render()
 	return true;
 }
 
-void MainApp::Update()
+bool MainApp::Update()
 {
+	m_Input->Frame();
+	if (m_Input->IsEscapePressed())
+		return false;
 	m_Camera->Update();
+
+	return true;
 }
 
 
@@ -102,6 +108,10 @@ bool MainApp::Init(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	//Create Input Class
+	m_Input = new Input;
+	m_Input->Initialize(g_HInstance, g_hWnd, ScreenX, ScreenY);
+
 	// Create the camera object.
 	m_Camera = new SimpleCamera;
 	if (!m_Camera)
@@ -120,7 +130,7 @@ bool MainApp::Init(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Initialize the model object.
-	result = m_Model->Initialize(m_D3D11->GetDevice());
+	result = m_Model->Initialize(m_D3D11->GetDevice(),L"Textures/test3.png");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -172,6 +182,12 @@ void MainApp::Shutdown()
 	{
 		delete m_Camera;
 		m_Camera = 0;
+	}
+
+	if (m_Input)
+	{
+		delete m_Input;
+		m_Input = 0;
 	}
 
 	if (m_D3D11)

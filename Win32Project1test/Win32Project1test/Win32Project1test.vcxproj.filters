@@ -54,6 +54,12 @@
     <ClInclude Include="Input.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="SimpleDMesh.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Cube.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -80,6 +86,12 @@
     <ClCompile Include="Input.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="SimpleDMesh.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Cube.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Win32Project1test.rc">
@@ -95,11 +107,17 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\Colorps.fx">
+    <FxCompile Include="Shaders\Colorps.fx">
       <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\Colorvs.fx">
+    </FxCompile>
+    <FxCompile Include="Shaders\Colorvs.fx">
       <Filter>Shaders</Filter>
-    </None>
+    </FxCompile>
+    <FxCompile Include="Shaders\Textureps.fx">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Texturevs.fx">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

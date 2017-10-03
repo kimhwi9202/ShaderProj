@@ -1,6 +1,8 @@
 #pragma once
 class Input
 {
+public:
+	static Input* Instance;
 
 private:
 	IDirectInput8* m_directInput;
@@ -22,7 +24,10 @@ public:
 	bool Frame();
 
 	bool IsEscapePressed();
+	bool CheckKeyPressed(int Key_Code);
 	void GetMouseLocation(int&, int&);
+
+	static Input* GetInstance();
 
 private:
 	bool ReadKeyboard();

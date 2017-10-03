@@ -4,6 +4,7 @@
 #define DIRECTINPUT_VERSION 0x0800
 
 extern HWND g_hWnd;
+extern HINSTANCE g_HInstance;
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
